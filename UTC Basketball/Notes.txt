@@ -1,0 +1,6 @@
+To find Disappearing elements like [testSelenium.content_box] can be tricky.
+        Step 1: Open Chrome DevTools(f12). go to the dots span at top right then go to "more tools" > "Recorder"
+        Step 2: use the recorder and click on the disappearing element on each of its aspects then review the recorder's result to f8uijind the element
+            If you can't find the element necessary for a specific enough XPATH, you should get take record of the parent element and then
+                Go into dev tools on the original page and find the parent element in the devtools menu
+                right click the parent element and select "break on" > and then select all 3 breaks. proceed to mess with the page until you can find the specific XPATH
