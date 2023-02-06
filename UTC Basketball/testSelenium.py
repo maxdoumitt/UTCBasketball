@@ -10,6 +10,8 @@ from selenium.webdriver.chrome.options import Options
 #Global variables and functions
 #initialize information about the team in question
 team_name = "Chattanooga"
+
+
 players = [ #list of player names to gather info on
     "player0",
     "player1",
@@ -29,6 +31,10 @@ driver = webdriver.Chrome()
 #Let the page load for a few seconds
 def wait():
     time.sleep(5)
+
+#delete an element from the page. select the item to delete by putting className contents in the parameters
+def remove_by_class(x):
+    driver.execute_script("return document.getElementsByClassName('"+x+"')[0].remove();")
 
 #ShotQuality Screenshot Function
 def shot_quality():
@@ -63,9 +69,13 @@ def shot_quality():
     team_link = driver.find_element(By.LINK_TEXT, team_name)
     team_link.click()
     wait()
-    #Screenshot the main team stats
+    #Scroll until Element is within the screen
     team_stats = driver.find_element(By.XPATH, "//ul[@class=\"list-description rankList\"]")
-    team_stats.screenshot(team_name+'_stats.png')
+    driver.execute_script("arguments[0].scrollIntoView();", team_stats)
+    #remove navbar
+    remove_by_class("header fixed-header")
+    #Screenshot the main team stats
+    team_stats.screenshot('UTC Basketball\img\shot_quality_team_stats.png')
     #pauses program at end
     time.sleep(111)
 
