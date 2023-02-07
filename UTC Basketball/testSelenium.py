@@ -8,19 +8,18 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
 #Global variables and functions
+
 #initialize information about the team in question
 team_name = "Chattanooga"
 
 
 players = [ #list of player names to gather info on
-    "player0",
-    "player1",
-    "player2",
-    "player3",
-    "player4",
-    "player5",
+    "Jake Stephens",
+    "Jamaal Walker",
+    "Brody Robinson"
     #etc...
 ]
+players_length = len(players)
 
 
 #Code Begins ↓
@@ -36,8 +35,8 @@ def wait():
 def remove_by_class(x):
     driver.execute_script("return document.getElementsByClassName('"+x+"')[0].remove();")
 
-#ShotQuality Screenshot Function
-def shot_quality():
+#Opens to the team's page on the ShotQuality website
+def open_shot_quality():
     #Goes to the ShotQuality Website
     driver.get("https://shotquality.com/login")
     #Checks if "ShotQuality" is in the title to varify we are in the right place
@@ -69,6 +68,10 @@ def shot_quality():
     team_link = driver.find_element(By.LINK_TEXT, team_name)
     team_link.click()
     wait()
+
+
+#screenshots the teams general stats
+def capture_team_stats():
     #Scroll until Element is within the screen
     team_stats = driver.find_element(By.XPATH, "//ul[@class=\"list-description rankList\"]")
     driver.execute_script("arguments[0].scrollIntoView();", team_stats)
@@ -76,8 +79,47 @@ def shot_quality():
     remove_by_class("header fixed-header")
     #Screenshot the main team stats
     team_stats.screenshot('UTC Basketball\img\shot_quality_team_stats.png')
-    #pauses program at end
-    time.sleep(111)
+
+#opens specific players page
+def player_page(player_name):
+    #finds the link to the player's stat page by finding the link that matches the players name which is pulled from the players[] array
+    player_link = driver.find_element(By.LINK_TEXT, player_name)
+    player_link.click()
+    wait()
+    #define page sections
+    player_stats = driver.find_element(By.XPATH, "//ul[@class=\"list-description rankList h-auto w-100\"]")
+    player_in_cards = driver.find_element(By.XPATH, "//section[@class=\"mt-2 mb-4\"]")
+    player_stats_table = driver.find_element(By.XPATH, "//div[@class=\"Scoreside text-center new\"]")
+    player_stats_table_scroller = driver.find_element(By.XPATH, "//div[@class=\"Yearside\"]")
+    #scroll to and capture player_stats
+    driver.execute_script("arguments[0].scrollIntoView();", player_stats)
+    player_stats.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_stats.png')
+    wait()
+    #scroll to and capture player_in_cards. If theres no player_cards: pass
+    try: #if there are player_in_cards, capture them
+        driver.execute_script("arguments[0].scrollIntoView();", player_in_cards)
+        player_in_cards.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_in_cards.png')
+        wait()
+    except: #if there are not player_in_cards, pass
+        pass
+    #scroll to filter scroller and capture player_stats_table
+    try: #if there is a player_stats_table, capture it
+        driver.execute_script("arguments[0].scrollIntoView();", player_stats_table_scroller)
+        player_stats_table.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_stats_table.png')
+        wait()
+    except: #if there is not a player_stats_table, pass
+        pass
+    #goes back to main team page
+    driver.back()
+    wait()
 
 
-shot_quality()
+def main():
+    open_shot_quality()
+    capture_team_stats()
+    for i in range(players_length):
+        player_page(players[i])
+
+main()
+#pauses program at end
+time.sleep(30)
