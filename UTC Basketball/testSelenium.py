@@ -1,5 +1,6 @@
 #Import Usernames and Passwords
 import logins
+import teamSearches
 import time
 #Selenium Imports
 from selenium import webdriver
@@ -8,6 +9,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
 #Global variables and functions
+
+#constant variables
+#website links
+fast_scout_login = "https://id.fastmodelsports.com/authorize?response_type=token&client_id=sxeeft0umTGiqwU4-scout&redirect_uri=https%3A%2F%2Ffastscout.fastmodelsports.com"
+shot_quality_login = "https://shotquality.com/login"
 
 #initialize information about the team in question
 team_name = "Chattanooga"
@@ -19,7 +25,10 @@ players = [ #list of player names to gather info on
     "Brody Robinson"
     #etc...
 ]
+
+#variable for length of player array
 players_length = len(players)
+
 
 
 #Code Begins ↓
@@ -38,7 +47,7 @@ def remove_by_class(x):
 #Opens to the team's page on the ShotQuality website
 def open_shot_quality():
     #Goes to the ShotQuality Website
-    driver.get("https://shotquality.com/login")
+    driver.get(shot_quality_login)
     #Checks if "ShotQuality" is in the title to varify we are in the right place
     assert "ShotQuality" in driver.title 
     #Load page
@@ -58,14 +67,14 @@ def open_shot_quality():
     wait()
     #Selects search bar and types the team name into it
     search_bar_init = driver.find_element(By.XPATH, "//input[@type=\"text\"]") #Search Bar on Initial Page
-    search_bar_init.send_keys(team_name)
+    search_bar_init.send_keys(teamSearches.UTC_Mocs['ShotQuality'])
     wait()
     #Clicks the FIRST search result when team name is written in
     content_box = driver.find_element(By.XPATH, "//span[@class=\"search-results__text\"]")
     content_box.click()
     wait()
     #click the team link to open their stats page
-    team_link = driver.find_element(By.LINK_TEXT, team_name)
+    team_link = driver.find_element(By.LINK_TEXT, teamSearches.UTC_Mocs['ShotQuality'])
     team_link.click()
     wait()
 
@@ -113,13 +122,37 @@ def player_page(player_name):
     driver.back()
     wait()
 
+def FastScout():
+    #go to FastScout website login page
+    driver.get(fast_scout_login)
+    email_input = driver.find_element(By.XPATH, "//input[@type=\"text\"]") #email field
+    password_input = driver.find_element(By.XPATH, "//input[@type=\"password\"]") #password field
+    login_button = driver.find_element(By.XPATH, "//button[@type=\"submit\"]") #Login Button
+    #writes in the login information into the fields priviously found
+    email_input.send_keys(logins.email1)
+    password_input.send_keys(logins.password3)
+    #Clicks Login
+    login_button.click()
+    wait()
+    opponents_page_link = driver.find_element(By.LINK_TEXT, "OPPONENTS")
+    opponents_page_link.click()
+    wait()
+    #find the team in the opponents list
+    opponent_team_link = driver.find_element(By.XPATH, "//span[text()=\""+teamSearches.VMI[FastScout]+"\"]")
+    opponent_team_link.click()
+    wait()
+
 
 def main():
+    #open ShotQuality website to the team's page
     open_shot_quality()
+    #capture general team stats from ShotQuality
     capture_team_stats()
+    #Capture specific players stat data and loop through the list of white listed players
     for i in range(players_length):
         player_page(players[i])
 
-main()
+
+FastScout()
 #pauses program at end
 time.sleep(30)
