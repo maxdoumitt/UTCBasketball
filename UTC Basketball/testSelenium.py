@@ -20,16 +20,20 @@ team_name = "Chattanooga"
 
 
 players = [ #list of player names to gather info on
-    "Jake Stephens",
-    "Jamaal Walker",
-    "Brody Robinson"
+    "Asher Woods",
+    "Sean Conway",
+    "Rickey Bradley, Jr."
     #etc...
 ]
 
 #variable for length of player array
 players_length = len(players)
 
-
+team_list = [
+    "UTC_Mocs",
+    "VMI",
+    "TTU_Golden_Eagles"
+]
 
 #Code Begins ↓
 
@@ -45,7 +49,7 @@ def remove_by_class(x):
     driver.execute_script("return document.getElementsByClassName('"+x+"')[0].remove();")
 
 #Opens to the team's page on the ShotQuality website
-def open_shot_quality():
+def open_shot_quality(chosen_team):
     #Goes to the ShotQuality Website
     driver.get(shot_quality_login)
     #Checks if "ShotQuality" is in the title to varify we are in the right place
@@ -67,20 +71,20 @@ def open_shot_quality():
     wait()
     #Selects search bar and types the team name into it
     search_bar_init = driver.find_element(By.XPATH, "//input[@type=\"text\"]") #Search Bar on Initial Page
-    search_bar_init.send_keys(teamSearches.UTC_Mocs['ShotQuality'])
+    search_bar_init.send_keys(teamSearches.teams[chosen_team]['ShotQuality'])
     wait()
     #Clicks the FIRST search result when team name is written in
     content_box = driver.find_element(By.XPATH, "//span[@class=\"search-results__text\"]")
     content_box.click()
     wait()
     #click the team link to open their stats page
-    team_link = driver.find_element(By.LINK_TEXT, teamSearches.UTC_Mocs['ShotQuality'])
+    team_link = driver.find_element(By.LINK_TEXT, teamSearches.teams[chosen_team]['ShotQuality'])
     team_link.click()
     wait()
 
 
 #screenshots the teams general stats
-def capture_team_stats():
+def capture_shot_quality_team_stats():
     #Scroll until Element is within the screen
     team_stats = driver.find_element(By.XPATH, "//ul[@class=\"list-description rankList\"]")
     driver.execute_script("arguments[0].scrollIntoView();", team_stats)
@@ -90,7 +94,7 @@ def capture_team_stats():
     team_stats.screenshot('UTC Basketball\img\shot_quality_team_stats.png')
 
 #opens specific players page
-def player_page(player_name):
+def shot_quality_player_page(player_name):
     #finds the link to the player's stat page by finding the link that matches the players name which is pulled from the players[] array
     player_link = driver.find_element(By.LINK_TEXT, player_name)
     player_link.click()
@@ -101,30 +105,43 @@ def player_page(player_name):
     player_stats_table = driver.find_element(By.XPATH, "//div[@class=\"Scoreside text-center new\"]")
     player_stats_table_scroller = driver.find_element(By.XPATH, "//div[@class=\"Yearside\"]")
     #scroll to and capture player_stats
-    driver.execute_script("arguments[0].scrollIntoView();", player_stats)
-    player_stats.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_stats.png')
-    wait()
-    #scroll to and capture player_in_cards. If theres no player_cards: pass
-    try: #if there are player_in_cards, capture them
-        driver.execute_script("arguments[0].scrollIntoView();", player_in_cards)
-        player_in_cards.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_in_cards.png')
+    try: #this should work unless the player name doesn't match the player name on the page
+        driver.execute_script("arguments[0].scrollIntoView();", player_stats)
+        player_stats.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_stats.png')
         wait()
-    except: #if there are not player_in_cards, pass
-        pass
-    #scroll to filter scroller and capture player_stats_table
-    try: #if there is a player_stats_table, capture it
-        driver.execute_script("arguments[0].scrollIntoView();", player_stats_table_scroller)
-        player_stats_table.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_stats_table.png')
-        wait()
-    except: #if there is not a player_stats_table, pass
+        #scroll to and capture player_in_cards. If theres no player_cards: pass
+        try: #if there are player_in_cards, capture them
+            driver.execute_script("arguments[0].scrollIntoView();", player_in_cards)
+            player_in_cards.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_in_cards.png')
+            wait()
+        except: #if there are not player_in_cards, pass
+            pass
+        #scroll to filter scroller and capture player_stats_table
+        try: #if there is a player_stats_table, capture it
+            driver.execute_script("arguments[0].scrollIntoView();", player_stats_table_scroller)
+            player_stats_table.screenshot('UTC Basketball\img\\'+player_name+'shot_quality_player_stats_table.png')
+            wait()
+        except: #if there is not a player_stats_table, pass
+            print("error finding player stats table for player \""+player_name+"\"in shot_quality_player_page")
+            pass
+    except:
+        print("error finding player \""+player_name+"\" on ShotQuality Website in shot_quality_player_page")
         pass
     #goes back to main team page
     driver.back()
     wait()
 
-def FastScout():
+def open_fast_scout(chosen_team):
     #go to FastScout website login page
     driver.get(fast_scout_login)
+    #maximizes browser
+    try:
+        driver.maximize_window()
+    except:
+        print("error maximizing window in open_fast_scout()")
+        pass
+    wait()
+    #Find Login Info Inputs and  Login Button
     email_input = driver.find_element(By.XPATH, "//input[@type=\"text\"]") #email field
     password_input = driver.find_element(By.XPATH, "//input[@type=\"password\"]") #password field
     login_button = driver.find_element(By.XPATH, "//button[@type=\"submit\"]") #Login Button
@@ -132,27 +149,67 @@ def FastScout():
     email_input.send_keys(logins.email1)
     password_input.send_keys(logins.password3)
     #Clicks Login
-    login_button.click()
+    login_button.click() 
     wait()
+    #Click the Opponents Page
     opponents_page_link = driver.find_element(By.LINK_TEXT, "OPPONENTS")
     opponents_page_link.click()
     wait()
     #find the team in the opponents list
-    opponent_team_link = driver.find_element(By.XPATH, "//span[text()=\""+teamSearches.VMI[FastScout]+"\"]")
-    opponent_team_link.click()
+    find_opponent = driver.find_element(By.XPATH, "//span[text()[contains(.,'"+teamSearches.teams[chosen_team]["FastScout"]+"')]]")
+    find_opponent.click()
+    wait()
+
+def capture_fast_scout_box_scores(player_name):
+    #open players box scores page
+    find_player_box_stats = driver.find_element(By.XPATH, "//div[text()[contains(.,'"+player_name+"')]]")
+    find_player_box_stats.click()
+    wait()
+    #capture player image
+    try:
+        find_player_image = driver.find_element(By.XPATH, "//img[@style=\"display: block; margin-right: 0px; object-fit: contain; height: 130px; width: auto; border: none; border-radius: 4px; cursor: inherit; pointer-events: all;\"]")
+        find_player_image.screenshot('UTC Basketball\img\\'+player_name+'fast_scout_image.png')
+    except:
+        print("error finding "+player_name+"'s image in capture_fast_scout_box_scores")
+        pass
+    #capture player box score
+    try:
+        capture_player_box_stats = driver.find_element(By.XPATH, "//div[@class=\"Tile singlePlayerStats top-left-tile\"]")
+        capture_player_box_stats.screenshot('UTC Basketball\img\\'+player_name+'fast_scout_box_score.png')
+    except:
+        print("error finding "+player_name+"'s box scores in capture_fast_scout_box_scores")
+        pass
+    wait()
+    #goes back to main team page
+    driver.back()
     wait()
 
 
+
+
 def main():
+    #Start of ShotQuality Stuff
     #open ShotQuality website to the team's page
-    open_shot_quality()
+    open_shot_quality(team_list[1])
     #capture general team stats from ShotQuality
-    capture_team_stats()
+    capture_shot_quality_team_stats()
     #Capture specific players stat data and loop through the list of white listed players
     for i in range(players_length):
-        player_page(players[i])
+        shot_quality_player_page(players[i])
+    #End of ShotQuality Stuff
 
+    #Start of FastScout Stuff
+    #open fast scout website to the opponents page
+    open_fast_scout(team_list[1])
+    #loops through the players and gets their boxscore scores
+    for i in range(players_length):
+        try:
+            capture_fast_scout_box_scores(players[i])
+        except: 
+            print("error finding player \""+players[i]+"\" in capture_fast_scout_box_scores()")
+            pass
+    #End of FastScout stuff
 
-FastScout()
+main()
 #pauses program at end
 time.sleep(30)
