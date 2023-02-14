@@ -1,0 +1,11 @@
+User must install multiple packages for this program to work.
+
+Python: 
+    Just go online and download/install it from the python website
+
+Selenium:
+    open powershell and run the command: pip install selenium
+    if this doesn't work open command prompt and run the command: pip.exe install selenium
+
+PyQt:
+    open powershell and run the command: pip install pyqt5

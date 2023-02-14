@@ -4,9 +4,3 @@ To find Disappearing elements like [testSelenium.content_box] can be tricky.
             If you can't find the element necessary for a specific enough XPATH, you should get take record of the parent element and then
                 Go into dev tools on the original page and find the parent element in the devtools menu
                 right click the parent element and select "break on" > and then select all 3 breaks. proceed to mess with the page until you can find the specific XPATH
-
-
-Current Error::: 
-    the name for players is different on ShotQuality and FastScout so I should make a similar setup to how I have the team names
-    setup with a nested dictionary in order to be able to select a player in the original array and still be able to have different
-    string inputs for the ShotQuality and FastScout functions
