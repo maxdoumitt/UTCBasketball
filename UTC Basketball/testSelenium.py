@@ -32,9 +32,9 @@ players = [ #list of player names to gather info on
 players_length = len(players)
 
 team_list = [
-    "UTC_Mocs",
+    "Chattanooga",
     "VMI",
-    "TTU_Golden_Eagles"
+    "Tennessee Tech"
 ]
 
 #Create extra folders in the img folder to subdivide the data for the players
@@ -62,7 +62,7 @@ def remove_by_class(x):
     driver.execute_script("return document.getElementsByClassName('"+x+"')[0].remove();")
 
 #Opens to the team's page on the ShotQuality website
-def open_shot_quality(chosen_team):
+def open_shot_quality():
     #Goes to the ShotQuality Website
     driver.get(shot_quality_login)
     #Checks if "ShotQuality" is in the title to varify we are in the right place
@@ -80,6 +80,8 @@ def open_shot_quality(chosen_team):
     #Clicks Login
     login_button.click()
     wait()
+
+def shot_quality_select_team(chosen_team):
     #Selects search bar and types the team name into it
     search_bar_init = driver.find_element(By.XPATH, "//input[@type=\"text\"]") #Search Bar on Initial Page
     search_bar_init.send_keys(teamSearches.teams[chosen_team]['ShotQuality'])
@@ -198,8 +200,10 @@ def capture_fast_scout_image_and_stats(player_name, loops):
 
 def main():
     #Start of ShotQuality Stuff
-    #open ShotQuality website to the team's page
-    open_shot_quality(team_list[1])
+    #open ShotQuality website and logs in
+    open_shot_quality()
+    #opens the teams page in ShotQuality
+    shot_quality_select_team(team_list[1])
     #capture general team stats from ShotQuality
     capture_shot_quality_team_stats(team_list[1])
     #Capture specific players stat data and loop through the list of white listed players

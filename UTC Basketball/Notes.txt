@@ -4,3 +4,9 @@ To find Disappearing elements like [testSelenium.content_box] can be tricky.
             If you can't find the element necessary for a specific enough XPATH, you should get take record of the parent element and then
                 Go into dev tools on the original page and find the parent element in the devtools menu
                 right click the parent element and select "break on" > and then select all 3 breaks. proceed to mess with the page until you can find the specific XPATH
+
+Current big issue with the way this program works is that it requires the names of players and the specific way that they are refered to on the webpages in order to 
+identify a lot of the data that is collected on them. as soon as a new season starts or players leave/join different teams the program in its current state will fail.
+I think the way I will fix this is write a script to go into the webpages and create arrays of the players' names through simply extracting the text from the webpages
+where the links will be clicked to access their data. I will most likely input the array of player names acquired from the ShotQuality webpage and plug it into the
+GUI's dropdown for the user to chose which players they want.
