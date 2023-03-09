@@ -52,3 +52,8 @@ app = QApplication(sys.argv)
 window = Window()
 #start the app
 sys.exit(app.exec_())
+
+#we want the first window to be a team selector window where the user will select the team from the dropdown menu.
+#next the program will take the team they want and gather all of the player names and create the dictionary with all the player names and such
+#then the user will be prompted with another page in the window that will ask for the user to choose which players they want to collect data on.
+#then the main program will run to collect the data that the user wants.
