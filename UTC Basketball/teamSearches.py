@@ -8,22 +8,29 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import Select 
 from selenium.webdriver.support.select import Select
-
-
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 
 #website links
 fast_scout_login = "https://id.fastmodelsports.com/authorize?response_type=token&client_id=sxeeft0umTGiqwU4-scout&redirect_uri=https%3A%2F%2Ffastscout.fastmodelsports.com"
 shot_quality_login = "https://shotquality.com/login"
+delay = 30 # seconds
 #Sets Chrome as web browser (Install Chrome & Chromium)
 driver = webdriver.Chrome()
 #Let the page load for a few seconds
-def wait():
-    time.sleep(5)
+def wait(x =2):
+    time.sleep(x)
 
 shot_quality_collection = []
 fast_scout_collection = []
+
+#This represents the team(s) the user chose to look at from the drop down menu.
+selected_teams_dictionary_names = [
+    "VMI"
+]
 
 
 
@@ -39,7 +46,6 @@ def open_shot_quality():
     except:
         pass
     #Find the locations of necessary LOGIN page items
-    wait()
     email_input = driver.find_element(By.XPATH, "//input[@type=\"email\"]") #email field
     pass_input = driver.find_element(By.XPATH, "//input[@type=\"password\"]") #password field
     login_button = driver.find_element(By.XPATH, "//button[@type=\"submit\"]") #Login Button
@@ -48,7 +54,7 @@ def open_shot_quality():
     pass_input.send_keys(logins.password1)
     #Clicks Login
     login_button.click()
-    wait()
+    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//input[@type=\"text\"]")))
     
 def shot_quality_select_team(chosen_team):
     #Selects search bar and types the team name into it
@@ -60,7 +66,10 @@ def shot_quality_select_team(chosen_team):
     #click the team link to open their stats page
     team_link = driver.find_element(By.LINK_TEXT, teams[chosen_team]["ShotQuality"])
     team_link.click()
-    wait()
+    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//table[@class=\"table playerStats\"]/tbody/tr[1]/td[1]/a")))
+    #get the team's image for cover page
+    logo_image = driver.find_element(By.XPATH, "//img[@class=\"teamLogo\"]")
+    logo_image.screenshot('UTC Basketball\img\general_team_data\\'+selected_teams_dictionary_names[0]+'_logo_image.png')
             
 #if anyone python literate reads this just know that I am well aware how inefficient this code is.
 #I cannot be bothered to spend any more time trying to get the index of the html list to limit the loop so I will just brute force my way thorugh with try/except.
@@ -77,7 +86,6 @@ def shot_quality_collect_player_names(i):
         i=i-1
         #appends that above temp variable to the array of ShotQuality player names.
         shot_quality_collection.append(player_name_complete)
-        time.sleep(1)
     except:
         pass 
 
@@ -91,7 +99,6 @@ def open_fast_scout():
     except:
         print("error maximizing window in open_fast_scout()")
         pass
-    wait()
     #Find Login Info Inputs and  Login Button
     email_input = driver.find_element(By.XPATH, "//input[@type=\"text\"]") #email field
     password_input = driver.find_element(By.XPATH, "//input[@type=\"password\"]") #password field
@@ -101,16 +108,26 @@ def open_fast_scout():
     password_input.send_keys(logins.password3)
     #Clicks Login
     login_button.click() 
-    wait()
+    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.LINK_TEXT, "OPPONENTS")))
     #Click the Opponents Page
     opponents_page_link = driver.find_element(By.LINK_TEXT, "OPPONENTS")
     opponents_page_link.click()
-    wait()
+    #let popup box load up
+    wait(5)
+    #sometimes a popup box will appear on the page that abstructs the ability to click the opponent team. this closes that box
+    try:
+        popupbox = driver.find_element(By.XPATH, "/html/body/appcues/survey-container/cue/div/section/div/div/div/div[1]/a/div[2]")
+        popupbox.click()
+    except:
+        pass
 
 #find the team in the opponents list
 def fast_scout_select_team(chosen_team):
+    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//span[text()[contains(.,'"+chosen_team+"')]]")))
     find_opponent = driver.find_element(By.XPATH, "//span[text()[contains(.,'"+chosen_team+"')]]")
+    driver.execute_script("arguments[0].scrollIntoView();", find_opponent)
     find_opponent.click()
+    WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//table[@id=\"undefined-boxscore\"]/tbody/tr[1]/td[4]")))
     wait()
 
 def fast_scout_collect_player_names(i):
@@ -120,7 +137,6 @@ def fast_scout_collect_player_names(i):
         player_name_complete = player_name_link.text
         i=i-1 
         fast_scout_collection.append(player_name_complete)
-        time.sleep(1)
     except:
         pass
 
@@ -148,10 +164,7 @@ teams_dictionary_names = [
     "Wofford",
 ]
 
-#This represents the team(s) the user chose to look at from the drop down menu.
-selected_teams_dictionary_names = [
-    "Mercer"
-]
+
 
 #teams nested Dictionary
 
@@ -354,7 +367,7 @@ def collect_shot_quality_names():
         x = i
         open_shot_quality()
         shot_quality_select_team(teams[selected_teams_dictionary_names[i]]["ShotQuality"])
-        for j in range(len(fast_scout_collection)+2): #I know this is not efficient. It does however work. :D 
+        for j in range(len(fast_scout_collection)+2): #I can run the loop less this time because we defined the team length previously. Still adding 3 for a buffer.
             shot_quality_collect_player_names(j)
     print("finishedSQ")
 
@@ -362,12 +375,15 @@ def collect_fast_scout_names():
     for i in range(len(selected_teams_dictionary_names)):
         open_fast_scout()
         fast_scout_select_team(teams[selected_teams_dictionary_names[i]]["FastScout"])
-        for j in range(25): #I can run the loop less this time because we defined the team length previously. Still adding 3 for a buffer.
+        for j in range(25): #I know this is not efficient. It does however work. :D 
             fast_scout_collect_player_names(j)
     print("finishedFS")
     
 def find_players():
     collect_fast_scout_names()
+    #due to html weirdness, there are two items added to the fast scout array that aren't player names. The next two lines remove them.
+    fast_scout_collection.remove("Opponent")
+    fast_scout_collection.remove("Team Total")
     collect_shot_quality_names()
 
 

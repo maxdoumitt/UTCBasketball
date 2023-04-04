@@ -9,3 +9,6 @@ Selenium:
 
 PyQt:
     open powershell and run the command: pip install pyqt5
+
+ReportLab:
+    open powershell and then run the command: pip install reportlab
