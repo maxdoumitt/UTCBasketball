@@ -17,9 +17,14 @@ opp_red = HexColor('#c80404')
 year = datetime.date.today().year
 lastyear = year-1
 
+#Common Imported Variables
 #filename = teamSearches.selected_teams_dictionary_names[0]+" Document"
 filename = "team_name Document.pdf" #Input Opponent Team Name
 #opponent_name = teamSearches.selected_teams_dictionary_names[0]
+opponent_name = "VMI"
+number_of_players = 5
+
+
 offense_items = [
     "Depth:",
     "Play Style:",
@@ -29,6 +34,13 @@ offense_items = [
     "Shot Volume:",
     "Shot Selection:"
 ]
+
+defense_items = [
+    "Scheme:",
+    "Pace:",
+    "Efficiency:"
+]
+
 
 c = canvas.Canvas(filename)
 form = c.acroForm
@@ -40,7 +52,7 @@ def cover_page():
     c.setFont("Helvetica-Bold", 46)
     c.setFillColor(colors.black)
     c.drawCentredString(300, 730, "Chattanooga vs")
-    c.drawCentredString(300, 685, "VMI") 
+    c.drawCentredString(300, 685, opponent_name) 
     c.setFont("Helvetica-Bold", 28)
     c.drawCentredString(300, 650, "Game #") #Input Game Number
     c.drawCentredString(300, 610, "Date") #Input Game Date
@@ -49,7 +61,7 @@ def cover_page():
     #Write Vs
     c.drawCentredString(300, 360, "vs")
     #input Opponent Image
-    c.drawInlineImage("UTC Basketball\img\general_team_data\VMI_logo_image.png", 200, 135, 200, 200)
+    c.drawInlineImage("UTC Basketball\img\general_team_data\\"+opponent_name+"_logo_image.png", 200, 135, 200, 200)
     
 
 #Creates the Overview Page
@@ -81,7 +93,7 @@ def overview_page():
     c.setFont("Helvetica", 10)
     c.drawCentredString(300, 575, "Scouting Report")
     #Inputs the teams General Stats from Shot Quality
-    c.drawInlineImage("UTC Basketball\img\general_team_data\shot_quality_VMI_stats.png", 110, 420, 370, 150)
+    c.drawInlineImage("UTC Basketball\img\general_team_data\shot_quality_"+opponent_name+"_stats.png", 110, 420, 370, 150)
     #What We Must Do To Win Text Box
     c.setFillColor(chatt_blue)
     c.rect(50, 360, 495, 30, 0, 1)
@@ -100,7 +112,7 @@ def opponent_offense_page():
     c.rect(50, 760, 495, 30, 0, 1)
     c.setFillColor(colors.white)
     c.setFont("Helvetica", 16)
-    c.drawCentredString(300, 770, "VMI Offense") #Input Enemy Team Name
+    c.drawCentredString(300, 770, opponent_name+" Offense") #Input Enemy Team Name
     #makes the first 7 Prompts and Text Field Inputs
     c.setFillColor(colors.black)
     c.setFont("Helvetica-Bold", 14)
@@ -119,7 +131,104 @@ def opponent_offense_page():
     while(hite>30):
         form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = hite-5, width = 400, height = 20, fontSize = 14 )
         hite-=20
+    
+        
+def opponent_defense_page():
+    #Opponent Defense Text Box
+    c.setFillColor(opp_red)
+    c.rect(50, 760, 495, 30, 0, 1)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica", 16)
+    c.drawCentredString(300, 770, opponent_name+" Defense") #Input Enemy Team Name
+    #makes the first 3 Prompts and Text Field Inputs
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica-Bold", 14)
+    hite = 730
+    for i in range(len(defense_items)):
+        c.drawString(75, hite, defense_items[i]) 
+        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = hite-5, width = 400, height = 20, fontSize = 14 )
+        hite-=30
+    #Shot Profile Prompts and Text Field Inputs
+    c.drawString(75, 610, "Shot Profile:")
+    for i in range(5): 
+        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = 605-20*i, width = 400, height = 20, fontSize = 14 )
+    #Summary Prompt and Text Field Inputs
+    hite = 490
+    c.drawString(75, hite, "Summary:")
+    for i in range(12):
+        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = hite-5, width = 400, height = 20, fontSize = 14 )
+        hite-=20
+    #Their Opponent Shot Chart Text Box
+    c.setFillColor(opp_red)
+    c.rect(175, 210, 250, 30, 0, 1)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica", 16)
+    c.drawCentredString(300, 220, "Their Opponents:") 
+    #input shot Chart Image
+    c.drawInlineImage("UTC Basketball\img\\boiler_plates\shot_chart_boiler_plate.png", 175, 25, 250, 185)
 
+def shooting_page():
+    #Shooting Text Box
+    c.setFillColor(opp_red)
+    c.rect(50, 760, 495, 30, 0, 1)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica", 16)
+    c.drawCentredString(300, 770, "Shooting")
+    #input team stats table
+    c.drawInlineImage("UTC Basketball\img\general_team_data\\bartorvik_"+opponent_name+"_table.png", 75, 610, 450, 140)
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(75, 580, "Notes:")
+    hite = 580
+    for i in range(6):
+        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 130, y = hite-5, width = 400, height = 20, fontSize = 14 )
+        hite-=20
+    #Opponent Shot Chart Text Box
+    c.setFillColor(opp_red)
+    hite = 400
+    c.rect(175, hite, 250, 30, 0, 1)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica", 16)
+    c.drawCentredString(300, hite+10, "Season Shot Chart") 
+    #input shot Chart Image
+    c.drawInlineImage("UTC Basketball\img\\boiler_plates\shot_chart_boiler_plate.png", 175, 215, 250, 185)
+
+player_name = "Player Name"
+def player_page():
+    c.drawInlineImage("UTC Basketball\img\\fast_scout\DJ Nussbaum\DJ Nussbaum_fast_scout_box_score.png", 75, 600, 500, 150)
+    c.drawInlineImage("UTC Basketball\img\\boiler_plates\\boiler_plate_fast_scout_image.png", 75, 730, 55, 75)
+    c.drawInlineImage("UTC Basketball\img\shot_quality\Asher Woods\Asher Woods_shot_quality_player_stats_table.png", 25, 540, 600, 90)
+    #Shot Chart Text Box
+    c.setFillColor(opp_red)
+    c.rect(95, 520, 170, 20, 0, 1)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica", 16)
+    c.drawString(140, 525, "Shot Chart") 
+    #input shot Chart Image
+    c.drawInlineImage("UTC Basketball\img\\boiler_plates\shot_chart_boiler_plate.png", 95, 365, 170, 155)
+    #Scouting Report Text Box
+    c.setFillColor(opp_red)
+    c.rect(340, 520, 180, 20, 0, 1)
+    c.setFillColor(colors.white)
+    c.setFont("Helvetica", 16)
+    c.drawString(375, 525, "Scouting Report")
+    #input Scouting Report Image
+    c.drawInlineImage("UTC Basketball\img\\boiler_plates\\boiler_plate_shot_quality_player_stats.png", 340, 310, 180, 210)
+    c.setFillColor(colors.black)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(75, 330, "Color:")
+    hite = 330
+    form.textfield("Text Field", colors.white, colors.white, colors.black, x = 150, y = hite-5, width = 180, height = 20, fontSize = 14 )
+    c.drawString(75, 300, "Notables:")
+    hite = 300
+    for i in range(3):
+        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 150, y = hite-5, width = 180, height = 20, fontSize = 14 )
+        hite-=20
+    c.drawString(75, 230, "Bottom Line:")
+    hite = 230
+    for i in range(3):
+        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 150, y = hite-5, width = 180, height = 20, fontSize = 14 )
+        hite-=20
 
 def main():
     cover_page()
@@ -127,6 +236,12 @@ def main():
     overview_page()
     c.showPage()
     opponent_offense_page()
+    c.showPage()
+    opponent_defense_page()
+    c.showPage()
+    shooting_page()
+    c.showPage()
+    player_page()
     c.save()
 
 main()
