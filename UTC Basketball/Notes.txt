@@ -10,3 +10,26 @@ identify a lot of the data that is collected on them. as soon as a new season st
 I think the way I will fix this is write a script to go into the webpages and create arrays of the players' names through simply extracting the text from the webpages
 where the links will be clicked to access their data. I will most likely input the array of player names acquired from the ShotQuality webpage and plug it into the
 GUI's dropdown for the user to chose which players they want.
+
+
+↓ leaving this here just in case the new system breaks and I don't want to have to rewrite it later 
+
+def old_create_folders():
+    for i in range(3):
+        if path_check(path_names[i]):
+            pass
+        else:
+            os.mkdir(path_names[i])
+    #create the folders for each of the players found during the find_players() function
+    #ShotQuality Player Folders
+    for i in range(len(teamSearches.shot_quality_collection)):
+        if path_check("UTC Basketball\img\shot_quality\\"+teamSearches.shot_quality_collection[i]):
+            pass
+        else:
+            os.mkdir("UTC Basketball\\img\\shot_quality\\"+teamSearches.shot_quality_collection[i])
+    #FastScout Player Folders
+    for i in range(len(teamSearches.fast_scout_collection)):
+        if path_check("UTC Basketball\\img\\fast_scout\\"+teamSearches.fast_scout_collection[i]):
+            pass
+        else:
+            os.mkdir("UTC Basketball\\img\\fast_scout\\"+teamSearches.fast_scout_collection[i])

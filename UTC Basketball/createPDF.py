@@ -241,7 +241,8 @@ def main():
     c.showPage()
     shooting_page()
     c.showPage()
-    player_page()
+    #for i in range(number_of_players):
+        #player_page(fast_scout_box_score, fast_scout_image, shot_quality_player_stats_table, shot_quality_player_stats)
     c.save()
 
 main()

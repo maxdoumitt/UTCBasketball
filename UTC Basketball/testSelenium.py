@@ -42,7 +42,7 @@ team_list = [
     "Tennessee Tech"
 ]
 
-
+tracker_array = []
 
 #Code Begins ↓
 
@@ -107,7 +107,7 @@ def capture_shot_quality_team_stats(team_name):
     team_stats.screenshot('UTC Basketball\img\general_team_data\shot_quality_'+team_name+'_stats.png')
 
 #opens specific players page
-def shot_quality_player_page(player_name):
+def shot_quality_player_page(player_name, save_location):
     #finds the link to the player's stat page by finding the link that matches the players name which is pulled from the players[] array
     player_link = driver.find_element(By.LINK_TEXT, player_name)
     wait(1)
@@ -124,17 +124,17 @@ def shot_quality_player_page(player_name):
         driver.execute_script("arguments[0].scrollIntoView();", player_stats)
         #must wait here because there is a loading blur in the js of the page
         wait(2)
-        player_stats.screenshot('UTC Basketball\\img\\shot_quality\\'+player_name+"\\"+player_name+'_shot_quality_player_stats.png')
+        player_stats.screenshot(save_location+"\\"+player_name+'_shot_quality_player_stats.png')
         #scroll to and capture player_in_cards. If theres no player_cards: pass
         try: #if there are player_in_cards, capture them
             driver.execute_script("arguments[0].scrollIntoView();", player_in_cards)
-            player_in_cards.screenshot('UTC Basketball\\img\\shot_quality\\'+player_name+"\\"+player_name+'_shot_quality_player_in_cards.png')
+            player_in_cards.screenshot(save_location+"\\"+player_name+'_shot_quality_player_in_cards.png')
         except: #if there are not player_in_cards, pass
             pass
         #scroll to filter scroller and capture player_stats_table
         try: #if there is a player_stats_table, capture it
             driver.execute_script("arguments[0].scrollIntoView();", player_stats_table_scroller)
-            player_stats_table.screenshot('UTC Basketball\\img\\shot_quality\\'+player_name+"\\"+player_name+'_shot_quality_player_stats_table.png')
+            player_stats_table.screenshot(save_location+"\\"+player_name+'_shot_quality_player_stats_table.png')
         except: #if there is not a player_stats_table, pass
             print("error finding player stats table for player \""+player_name+"\" in shot_quality_player_page")
             pass
@@ -182,7 +182,7 @@ def capture_fast_scout_image_and_stats(player_name, chosen_team):
     #capture player image
     try:
         find_player_image = driver.find_element(By.XPATH, "//img[@style=\"display: block; margin-right: 0px; object-fit: contain; height: 130px; width: auto; border: none; border-radius: 4px; cursor: inherit; pointer-events: all;\"]")
-        find_player_image.screenshot('UTC Basketball\\img\\fast_scout\\'+player_name+"\\"+player_name+'_fast_scout_image.png')
+        find_player_image.screenshot('UTC Basketball\\img\\'+player_name+"\\"+player_name+'_fast_scout_image.png')
     except:
         print("error finding "+player_name+"'s image in capture_fast_scout_box_scores")
         pass
@@ -191,7 +191,7 @@ def capture_fast_scout_image_and_stats(player_name, chosen_team):
         capture_player_box_stats = driver.find_element(By.XPATH, "//div[@class=\"Tile singlePlayerStats top-left-tile\"]")
         WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//span[text()[contains(.,'All')]]")))
         wait(1)
-        capture_player_box_stats.screenshot('UTC Basketball\\img\\fast_scout\\'+player_name+"\\"+player_name+'_fast_scout_box_score.png')
+        capture_player_box_stats.screenshot('UTC Basketball\\img\\'+player_name+"\\"+player_name+'_fast_scout_box_score.png')
     except:
         print("error finding "+player_name+"'s box scores in capture_fast_scout_box_scores")
         pass
@@ -285,28 +285,38 @@ def capture_bartorvik_stats(selected_team):
     bartorvik_table = driver.find_element(By.XPATH, "//table[@style=\"white-space:nowrap;margin:auto;table-layout:fixed\"]")
     bartorvik_table.screenshot("UTC Basketball\\img\\general_team_data\\bartorvik_"+selected_team+"_table.png")
 
+def create_folders():
+    #this string will store names found on fastscout to be compared with names on shotquality
+    #create general team data folder
+    if path_check("UTC Basketball\\img\\general_team_data"):
+        pass
+    else:
+        os.mkdir("UTC Basketball\\img\\general_team_data")
+    #create folders for the players
+    for i in range(len(teamSearches.fast_scout_collection)):
+        #main player folders
+        if path_check("UTC Basketball\\img\\"+teamSearches.fast_scout_collection[i]):
+            pass
+        else: 
+            os.mkdir("UTC Basketball\\img\\"+teamSearches.fast_scout_collection[i])
+        if path_check("UTC Basketball\\img\\"+teamSearches.fast_scout_collection[i]):
+            pass
+        else:
+            os.mkdir("UTC Basketball\\img\\"+teamSearches.fast_scout_collection[i])
+        #appends current player name to the tracker string
+        tracker_array.append(teamSearches.fast_scout_collection[i])
+
+            
+    
+
+    
+
+
 def main(selected_team):
     #gathers player names from ShotQuality and FastScout
     teamSearches.find_players()
     #Initialize folders to sort images
-    for i in range(3):
-        if path_check(path_names[i]):
-            pass
-        else:
-            os.mkdir(path_names[i])
-    #create the folders for each of the players found during the find_players() function
-    #ShotQuality Player Folders
-    for i in range(len(teamSearches.shot_quality_collection)):
-        if path_check("UTC Basketball\img\shot_quality\\"+teamSearches.shot_quality_collection[i]):
-            pass
-        else:
-            os.mkdir("UTC Basketball\\img\\shot_quality\\"+teamSearches.shot_quality_collection[i])
-    #FastScout Player Folders
-    for i in range(len(teamSearches.fast_scout_collection)):
-        if path_check("UTC Basketball\\img\\fast_scout\\"+teamSearches.fast_scout_collection[i]):
-            pass
-        else:
-            os.mkdir("UTC Basketball\\img\\fast_scout\\"+teamSearches.fast_scout_collection[i])
+    create_folders()
     #Start of ShotQuality Stuff
     #open ShotQuality website and logs in
     open_shot_quality()
@@ -314,10 +324,23 @@ def main(selected_team):
     shot_quality_select_team(selected_team)
     #capture general team stats from ShotQuality
     capture_shot_quality_team_stats(selected_team)
-    #Capture specific players stat data and loop through the list of white listed players
+    #Screenshots and saves the images from ShotQuality. Also defines where images will be stored.
+    save_location = ""
     for i in range(len(teamSearches.shot_quality_collection)):
-        shot_quality_list = sorted(teamSearches.shot_quality_collection)
-        shot_quality_player_page(shot_quality_list[i])
+        tracker = save_location
+        for j in range(len(teamSearches.fast_scout_collection)):
+                if teamSearches.shot_quality_collection[i] in tracker_array[j]:
+                    save_location = "UTC Basketball\\img\\"+tracker_array[j]
+                else: 
+                    pass
+        #checks to see if a folder was found for the players info. if there wasn't one found, create an alternative for it.
+        if save_location == tracker:
+            os.mkdir("UTC Basketball\\img\\shot_quality\\"+teamSearches.shot_quality_collection[i])
+            save_location = "UTC Basketball\\img\\shot_quality\\"+teamSearches.shot_quality_collection[i]
+            print("Wasn't able to find a fast_scout folder for "+teamSearches.shot_quality_collection[i])
+        else:
+            pass
+        shot_quality_player_page(teamSearches.shot_quality_collection[i], save_location)
     #End of ShotQuality Stuff
     #Start of FastScout Stuff
     #open fast scout website to the opponents page
