@@ -82,9 +82,9 @@ class Window(QMainWindow):
             self.label.setText("Index: "+str(team_index))
             #sets chosen team as the target team
             from scrapeData import main , test_pdf
-            #main(team_list[team_index])
+            main(team_list[team_index])
             #for testing pdf changes
-            test_pdf(team_list[team_index])
+            #test_pdf(team_list[team_index])
             #closes window when run button is clicked
             self.close()
 
