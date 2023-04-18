@@ -29,7 +29,7 @@ fast_scout_collection = []
 
 #This represents the team(s) the user chose to look at from the drop down menu.
 selected_teams_dictionary_names = [
-    "VMI"
+    "Milwaukee"
 ]
 
 
@@ -56,6 +56,11 @@ def open_shot_quality():
     login_button.click()
     WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//input[@type=\"text\"]")))
     
+#Check if the path, specified by the parameter, exists
+def path_check(path):
+    return os.path.exists(path)
+
+
 def shot_quality_select_team(chosen_team):
     #Selects search bar and types the team name into it
     search_bar_init = driver.find_element(By.XPATH, "//input[@type=\"text\"]") #Search Bar on Initial Page
@@ -67,9 +72,9 @@ def shot_quality_select_team(chosen_team):
     team_link = driver.find_element(By.LINK_TEXT, teams[chosen_team]["ShotQuality"])
     team_link.click()
     WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.XPATH, "//table[@class=\"table playerStats\"]/tbody/tr[1]/td[1]/a")))
-    #get the team's image for cover page
-    logo_image = driver.find_element(By.XPATH, "//img[@class=\"teamLogo\"]")
-    logo_image.screenshot('UTC Basketball\img\general_team_data\\'+selected_teams_dictionary_names[0]+'_logo_image.png')
+
+
+        
             
 #if anyone python literate reads this just know that I am well aware how inefficient this code is.
 #I cannot be bothered to spend any more time trying to get the index of the html list to limit the loop so I will just brute force my way thorugh with try/except.
@@ -362,28 +367,28 @@ players = {
 
 x = 0
 
-def collect_shot_quality_names():
+def collect_shot_quality_names(team_name):
     for i in range(len(selected_teams_dictionary_names)):
         x = i
         open_shot_quality()
-        shot_quality_select_team(teams[selected_teams_dictionary_names[i]]["ShotQuality"])
+        shot_quality_select_team(teams[team_name]["ShotQuality"])
         for j in range(len(fast_scout_collection)+2): #I can run the loop less this time because we defined the team length previously. Still adding 3 for a buffer.
             shot_quality_collect_player_names(j)
     print("finishedSQ")
 
-def collect_fast_scout_names():
+def collect_fast_scout_names(team_name):
     for i in range(len(selected_teams_dictionary_names)):
         open_fast_scout()
-        fast_scout_select_team(teams[selected_teams_dictionary_names[i]]["FastScout"])
+        fast_scout_select_team(teams[team_name]["FastScout"])
         for j in range(25): #I know this is not efficient. It does however work. :D 
             fast_scout_collect_player_names(j)
     print("finishedFS")
     
-def find_players():
-    collect_fast_scout_names()
+def find_players(team_name):
+    collect_fast_scout_names(team_name)
     #due to html weirdness, there are two items added to the fast scout array that aren't player names. The next two lines remove them.
     fast_scout_collection.remove("Opponent")
     fast_scout_collection.remove("Team Total")
-    collect_shot_quality_names()
+    collect_shot_quality_names(team_name)
 
 

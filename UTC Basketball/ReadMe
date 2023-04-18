@@ -1,14 +1,14 @@
 User must install multiple packages for this program to work.
 
-Python: 
+Python (programming language used :D): 
     Just go online and download/install it from the python website
 
-Selenium:
+Selenium (Used for all web scraping):
     open powershell and run the command: pip install selenium
     if this doesn't work open command prompt and run the command: pip.exe install selenium
 
-PyQt:
+PyQt (UI Controller):
     open powershell and run the command: pip install pyqt5
 
-ReportLab:
+ReportLab (PDF Creation):
     open powershell and then run the command: pip install reportlab

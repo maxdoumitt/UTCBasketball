@@ -2,12 +2,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
 from PIL import Image
-import PIL
 import datetime
 from datetime import date
 import os
 import teamSearches
-
 
 #Instance Variables
 chatt_blue = HexColor('#2f5597')
@@ -41,7 +39,7 @@ defense_items = [
     "Efficiency:"
 ]
 
-filename = "Pregame Report "+str(today_date)+".pdf"
+filename = "Textless Pregame Report "+str(today_date)+".pdf"
 c = canvas.Canvas(filename)
 form = c.acroForm
 c.setTitle(filename)
@@ -82,10 +80,6 @@ def overview_page(opponent_name):
     c.drawString(120, 640, str(year)+" Record:")
     c.drawString(120, 620, "SoCon Standing:")
     #Text Field Inputs for the prompts
-    form.textfield("Text Field", colors.white, colors.white, colors.black, x = 210, y = 676, width = 200, height = 20, fontSize = 14 )
-    form.textfield("Text Field", colors.white, colors.white, colors.black, x = 210, y = 656, width = 200, height = 20, fontSize = 14 )
-    form.textfield("Text Field", colors.white, colors. white, colors.black, x = 210, y = 636, width = 200, height = 20, fontSize = 14 )
-    form.textfield("Text Field", colors.white, colors.white, colors.black, x = 235, y = 616, width = 175, height = 20, fontSize = 14 )
     #Scout Report Text Box
     c.setFillColor(chatt_blue)
     c.rect(110, 570, 370, 15, 0, 1)
@@ -101,10 +95,6 @@ def overview_page(opponent_name):
     c.setFont("Helvetica", 16)
     c.drawCentredString(300, 370, "What We Must Do To Win")
     #Creates a Slew of Text Boxes for the Winning Strategies to be written
-    hite = 320
-    while(hite>30):
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 100, y = hite, width = 400, height = 20, fontSize = 14 )
-        hite-=20
     
 def opponent_offense_page(opponent_name):
     #Opponent Offense Text Box
@@ -119,18 +109,12 @@ def opponent_offense_page(opponent_name):
     hite = 730
     for i in range(len(offense_items)):
         c.drawString(75, hite, offense_items[i]) 
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = hite-5, width = 400, height = 20, fontSize = 14 )
         hite-=30
     #Shot Profile Prompts and Text Field Inputs
     c.drawString(75, 470, "Shot Profile:")
-    for i in range(8): 
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = 465-20*i, width = 400, height = 20, fontSize = 14 )
     #Summary Prompt and Text Field Inputs
     c.drawString(75, 285, "Summary:")
-    hite = 285
-    while(hite>30):
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = hite-5, width = 400, height = 20, fontSize = 14 )
-        hite-=20
+
     
         
 def opponent_defense_page(opponent_name):
@@ -144,20 +128,11 @@ def opponent_defense_page(opponent_name):
     c.setFillColor(colors.black)
     c.setFont("Helvetica-Bold", 14)
     hite = 730
-    for i in range(len(defense_items)):
-        c.drawString(75, hite, defense_items[i]) 
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = hite-5, width = 400, height = 20, fontSize = 14 )
-        hite-=30
     #Shot Profile Prompts and Text Field Inputs
     c.drawString(75, 610, "Shot Profile:")
-    for i in range(5): 
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = 605-20*i, width = 400, height = 20, fontSize = 14 )
     #Summary Prompt and Text Field Inputs
     hite = 490
     c.drawString(75, hite, "Summary:")
-    for i in range(12):
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 180, y = hite-5, width = 400, height = 20, fontSize = 14 )
-        hite-=20
     #Their Opponent Shot Chart Text Box
     c.setFillColor(opp_red)
     c.rect(175, 210, 250, 30, 0, 1)
@@ -179,10 +154,6 @@ def shooting_page(opponent_name):
     c.setFillColor(colors.black)
     c.setFont("Helvetica-Bold", 10)
     c.drawString(75, 580, "Notes:")
-    hite = 580
-    for i in range(6):
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 130, y = hite-5, width = 400, height = 20, fontSize = 14 )
-        hite-=20
     #Opponent Shot Chart Text Box
     c.setFillColor(opp_red)
     hite = 400
@@ -202,7 +173,6 @@ def player_page(box_score, image, table, stats, name, table_sizes):
     c.setFillColor(colors.black)
     c.setFont("Helvetica", 20)
     c.drawString(200, 760, name)
-
     #Scouting Report Text Box
     c.setFillColor(opp_red)
     c.rect(340, 520, 180, 20, 0, 1)
@@ -236,18 +206,8 @@ def player_page(box_score, image, table, stats, name, table_sizes):
     c.setFillColor(colors.black)
     c.setFont("Helvetica-Bold", 12)
     c.drawString(75, 330, "Color:")
-    hite = 330
-    form.textfield("Text Field", colors.white, colors.white, colors.black, x = 150, y = hite-5, width = 180, height = 20, fontSize = 14 )
     c.drawString(75, 300, "Notables:")
-    hite = 300
-    for i in range(3):
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 150, y = hite-5, width = 180, height = 20, fontSize = 14 )
-        hite-=20
     c.drawString(75, 230, "Bottom Line:")
-    hite = 230
-    for i in range(3):
-        form.textfield("Text Field", colors.white, colors.white, colors.black, x = 150, y = hite-5, width = 180, height = 20, fontSize = 14 )
-        hite-=20
 
 def createPDF(team_name):
     cover_page(team_name)
